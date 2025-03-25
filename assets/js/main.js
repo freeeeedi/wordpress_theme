@@ -43,28 +43,43 @@ $(document).ready(function () {
         });
     });
 
+    /**
+     * Поиск по каждому нажатию клавиши от пользователя с таймаутом на ввод
+     */
+    
+    let searchTimeout;
+
     $('#search-input').keyup(function(e) {
+
+        clearTimeout(searchTimeout);
         
         e.preventDefault();
         
         let searchQuery = $(this).val().trim();
         let resultContainer = $('#search-result');
+
+        if (searchQuery.length === 0) {
+            resultContainer.empty();
+            return;
+        }
         
-        $.post(
-            window.ajax.url,
-            {
-                action: 'search',
-                search: searchQuery
-            },
-            function(response) {
+        searchTimeout = setTimeout(function() {
+            $.post(
+                window.ajax.url,
+                {
+                    action: 'search',
+                    search: searchQuery
+                },
+                function(response) {
 
-                resultContainer.empty();
+                    resultContainer.empty();
 
-                response.forEach(element => {
-                    resultContainer.append(`<h3 class="search-form__result-element">${element}</h2>`);
-                });
+                    response.forEach(element => {
+                        resultContainer.append(`<h3 class="search-form__result-element">${element}</h2>`);
+                    });
 
-            }
-        );
+                }
+            );
+        }, 300);
     });
 });
